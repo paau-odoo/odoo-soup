@@ -1,0 +1,10 @@
+#!/bin/bash
+
+if [ "$#" -eq 0 ]; then
+  echo "Usage: soup <tablename>"
+  exit 1
+fi
+
+~/bin/sqlize/venv/bin/python3 ~/bin/sqlize/main.py $@
+
+exit 0

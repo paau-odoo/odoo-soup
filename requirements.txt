@@ -1,0 +1,3 @@
+magicprompt
+psycopg2
+sqlalchemy

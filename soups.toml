@@ -1,0 +1,81 @@
+db_name = "logs"
+
+# Default indexes for certain log fields
+[default.default]
+fields = [["date", 0], ["level", 3], ["origin", 4], ["type", 5, [0, -1]]]
+
+# Types which fit defaults with no other data needing parsing
+[default.automation]
+pattern = "odoo.addons.base_automation.models.base_automation"
+
+[default.report]
+pattern = "odoo.addons.base.models.ir_actions_report"
+
+[default.model]
+pattern = "odoo.models"
+
+[default.iap]
+pattern = "odoo.addons.iap.tools.iap_tools"
+
+[default.pos_order]
+pattern = "odoo.addons.point_of_sale.models.pos_order"
+
+[default.pos_session]
+pattern = "odoo.addons.point_of_sale.models.pos_session"
+
+[default.serialization]
+pattern = "odoo.service.model"
+
+[default.mail]
+pattern = "odoo.addons.mail.models.mail_mail"
+
+[default.ir_model]
+pattern = "odoo.addons.base.models.ir_model"
+
+[default.domain]
+pattern = "odoo.osv.expression"
+
+[default.mail_thread]
+pattern = "odoo.addons.mail.models.mail_thread"
+
+[default.sh]
+pattern = "odoo.sh"
+
+[default.module_load]
+pattern = "odoo.modules.loading"
+
+[default.sql_query]
+pattern = "odoo.sql_db"
+
+[default.cron]
+pattern = "odoo.addons.base.models.ir_cron"
+
+# Types with specific params
+[default.web]
+pattern = "werkzeug"
+fields = [
+    ["ip", 6],
+    ["http", 11, [1]],
+    ["route", 12],
+    ["code", 14],
+    ["time", -1]
+]
+
+[default.login]
+pattern = "odoo.addons.base.models.res_users"
+fields = [["ip", -1], ["user", 10, [6]]]
+
+[default.unlink]
+pattern = "odoo.models.unlink"
+fields = [["user", 7, [1, 0]], ["model", 9], ["records", [13, 0]]]
+
+[default.ir_rule]
+pattern = "odoo.addons.base.models.ir_rule"
+fields = [["model", -1], ["user", -3, [0, -1]]]
+
+[default.export]
+pattern = "odoo.addons.web.controllers.export"
+fields = [["ip", 13, [0, -1]], ["user", 7], ["model", 10, [1, -1]]]
+
+[18.export]
+pattern = "jiimeeiy"
