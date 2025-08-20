@@ -1,5 +1,6 @@
 from sqlalchemy import create_engine
 import os
+import sys
 
 
 import tomllib
@@ -162,8 +163,8 @@ def parseConfig(version: str):
 
 
 config = {"parser": loadToml("soups.toml")}
-# config["table"] = sys.argv[1]
-config["table"] = "jimmy"
+config["table"] = sys.argv[1]
+# config["table"] = "big"
 config["path"] = os.getcwd()
 # Extract this out of the toml and keep separate from parsing config. Little sloppy but hehe
 config["db_name"] = config["parser"]["db_name"]
