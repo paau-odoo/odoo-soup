@@ -1,3 +1,4 @@
 magicprompt
 psycopg2
 sqlalchemy
+blessed

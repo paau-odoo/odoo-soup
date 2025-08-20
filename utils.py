@@ -26,14 +26,15 @@ def condense(skipped) -> list[str]:
     return pretty
 
 
-def listFiles(files: list[tuple]) -> None:
+def listFiles(files: list[tuple]) -> int:
     for i in range(len(files)):
         print(f"  {i + 1}: {files[i][0]}")
+
+    return len(files)
 
 
 def loadToml(path: str) -> dict:
     with open(path, "rb") as f:
-        print(f"Loading config from {path}...")
         try:
             config = tomllib.load(f)
             return config
@@ -82,7 +83,7 @@ def parseFields(fieldsList: list) -> dict:
     return fieldDict
 
 
-def parseConfig(version: str = "default"):
+def parseConfig(version: str):
     # It is easier for user to configure logline types by alias rather than the search pattern, so some changes must be made here to read efficiently
     # Ensure that there are expected members of config for parsing log lines
     try:
@@ -144,6 +145,10 @@ def parseConfig(version: str = "default"):
                             # Cover case where pattern was None so that a None key is not made
                             pattern = k
                         break
+
+                # Add it in if it is truly not present at all
+                if pattern is not None:
+                    typeDefs[pattern] = {"alias": type, "fields": defaultFields.copy()}
 
             # Now that it is guaranteed to be in, we will update the record with the version specific info
             fields = definition.get("fields")

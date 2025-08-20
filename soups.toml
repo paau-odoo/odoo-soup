@@ -77,5 +77,9 @@ fields = [["model", -1], ["user", -3, [0, -1]]]
 pattern = "odoo.addons.web.controllers.export"
 fields = [["ip", 13, [0, -1]], ["user", 7], ["model", 10, [1, -1]]]
 
-[18.export]
-pattern = "jiimeeiy"
+[18.http]
+pattern = "odoo.http"
+# [18.export]
+# pattern = "jiimeeiy"
+# [default.http]
+# pattern = "odoo.http"

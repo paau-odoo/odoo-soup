@@ -5,9 +5,19 @@ from utils import condense, listFiles, identifyFiles, config, engine, parseConfi
 import utils
 from datetime import datetime
 import gzip
+from blessed import Terminal
 
 # Read config file and do some setup
 Base = declarative_base()
+term = Terminal()
+
+bodyHeight = 5
+
+
+def clrBody():
+    with term.location(0, bodyHeight):
+        print(term.clear_eos)
+        term.move_xy(0, bodyHeight)
 
 
 # Log line model
@@ -124,13 +134,19 @@ def processLine(line: str) -> tuple:
 
 
 def listVersions():
-    print("Custom Configs:")
+    # Clean this up later whatever
+    configMap = {}
+    i = 1
     if len(config["parser"]) > 1:
+        print(f"({len(config['parser'])}) custom configs detected:")
         for v in config["parser"]:
             if v != "default":
-                print(f"  {v}")
-    else:
-        print("  **None**")
+                configMap[str(i)] = v
+                print(f"  {i}:  {v}")
+                i += 1
+        return configMap
+
+    return None
 
 
 def convertToSql(full_file_path: str):
@@ -162,52 +178,107 @@ def convertToSql(full_file_path: str):
 
         # Print out the lines that were skipped based on TYPE
         skipped = condense(skipped)
-        print(
-            "The following logline types were present in this log and will be skipped (sorted by frequency):"
-        )
-        for s in skipped:
-            print(f"  {s}")
 
     print("Creating log line objects...")
     logs = [Log(**l) for l in logLines]
     print("Writing to DB...")
     session.add_all(logs)
     session.commit()
+    return skipped
 
 
 def main():
-    print(f"Working in {config['path']}")
-    print()
-    print("Target:")
-    print(f"  {config['db_name']} -> {config['table']}")
+    # Please forgive the spaghetti code with stupid stupid terminal ui formatting and screen clearing
+    with term.fullscreen():
+        with term.location(0, 0):
+            print(term.on_black(" " * term.width))
+            print(
+                term.bold
+                + term.mediumorchid1
+                + term.on_black("🍲 ODOO SOUP 🍲".center(term.width - 2))
+                + term.normal
+            )
+            print(term.on_black(term.mediumorchid + "_" * term.width + term.normal))
+            targString = f"DB Target: {config['db_name']} -> {config['table']}"
+            cwdString = f"CWD: {config['path']}"
+            print(
+                term.on_gray20(
+                    targString
+                    + " " * (term.width - len(cwdString) - len(targString))
+                    + cwdString
+                )
+            )
 
-    print()
-    files = identifyFiles(config["path"])
+        with term.location(0, bodyHeight):
+            files = identifyFiles(config["path"])
 
-    if len(files):
-        print(f"({len(files)}) logfiles detected:")
-        listFiles(files)
-        print()
-        # Responses will be 1 indexed, so need to subtract 1 for actual file index
-        resp = (
-            prompt("Select a logfile to convert", numOnly=1, clearAfterResponse=1) - 1
-        )
+            if len(files):
+                print(f"({len(files)}) logfiles detected:")
+                numFiles = listFiles(files)
+                print()
+                # Responses will be 1 indexed, so need to subtract 1 for actual file index
+                resp = (
+                    prompt(
+                        "Select a logfile to convert",
+                        numOnly=1,
+                        clearAfterResponse=1,
+                        validators=[lambda x: 0 < int(x) <= numFiles],
+                    )
+                    - 1
+                )
 
-        listVersions()
-        vers = prompt(
-            "Choose a configuration (Enter for default)",
-            notEmpty=False,
-            clearAfterResponse=1,
-        )
+            else:
+                raise FileNotFoundError(
+                    f"No logfiles (xxxx.gz) detected in CWD {config['path']}"
+                )
 
-        print(f"Converting {files[resp][0]} to SQL table...")
-        utils.parse = parseConfig(vers or "default")
-        convertToSql(files[resp][1])
+        clrBody()
 
-    else:
-        raise FileNotFoundError(
-            f"No logfiles (xxxx.gz) detected in CWD {config['path']}"
-        )
+        with term.location(0, bodyHeight):
+            configs = listVersions()
+            # print(configs)
+            if configs:
+                vers = prompt(
+                    "Choose a configuration (ENTER for default)",
+                    capPrompt=False,
+                    castAnswer=False,
+                    notEmpty=False,
+                    clearAfterResponse=1,
+                    validators=[lambda x: x in configs or x == ""],
+                )
+
+                vers = configs.get(vers, "default")
+            else:
+                vers = "default"
+
+        clrBody()
+
+        with term.location(0, bodyHeight):
+            print(f"Converting {files[resp][0]} to SQL table...")
+            utils.parse = parseConfig(vers)
+            skipped = convertToSql(files[resp][1])
+
+        clrBody()
+
+        with term.location(0, bodyHeight):
+            print(term.bold + term.mediumorchid1 + "🍲 Done!" + term.normal)
+            print(
+                "The following line types were skipped due to not being present in your config (sorted by freq):"
+            )
+            print()
+            for s in skipped:
+                print(f"  {s}")
+            print()
+            input(
+                term.bold
+                + term.mediumorchid1
+                + "> Press ENTER to exit <".center(term.width)
+                + term.normal
+            )
 
 
-main()
+# main()
+
+
+if __name__ == "__main__":
+    main()
