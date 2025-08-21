@@ -162,7 +162,7 @@ def parseConfig(version: str):
     return typeDefs
 
 
-config = {"parser": loadToml("soups.toml")}
+config = {"parser": loadToml(sys.argv[2] + "/soups.toml")}
 config["table"] = sys.argv[1]
 # config["table"] = "big"
 config["path"] = os.getcwd()

@@ -1,4 +1,5 @@
 # 🍲 Odoo Soup
+<img align="center" width="200" src="https://i.ibb.co/XZG3YMVV/PXL-20250819-184433391.jpg">
 
 Create SQL tables from Odoo.sh log files for advanced diagnostics
 
@@ -16,7 +17,7 @@ Create SQL tables from Odoo.sh log files for advanced diagnostics
 
 ## Installation and Setup
 
-### Clone and install deps
+### Clone the repo
 
 Clone the repo somewhere cool.
 ```shell
@@ -31,8 +32,7 @@ chmod +x ./odoo-soup
 ### Add to your PATH
 Odoo soup will read log files automatically from your CWD when you use it, so you should probably do this for ease of use.
 ```shell
-echo 'export PATH="$PATH:$(pwd)"' >> ~/.bashrc
-source ~/.bashrc
+echo 'export PATH="$PATH:'"$(pwd)"'"' >> ~/.bashrc && source ~/.bashrc
 ```
 
 Database setup and virtual environments/dependencies are handled automatically on first launch.
@@ -48,11 +48,11 @@ $ odoo-soup <table name>
 
 Choose the logfile in your CWD to import. If you have no custom configs, hitting enter will begin the import.
 
-<SCREENSHOT>
+![screenshot 1](./img/ss1.png)
 
 After a successful import, Odoo Soup will show you a list of log line types it encountered in your file which were **not** imported due to being absent from the selected configuration. 
 
-<SCREENSHOT>
+![screenshot 3](./img/ss3.png)
 
 It is encouraged to only include relevant log line types during your imports since many the types not included in the default config do not have much parseable data. This is why skipped lines are displayed in descending frequency so that you can easily consider if you should write a custom config for any of them. We will cover this in the next section.
 
@@ -83,7 +83,7 @@ The SQL table has 12 columns to which you can map data to:
 - records (text)
 - text (text)
 
-All records will have a plain text version of the log line added to `text` column, so you should not place anything into `text`
+All records will have a plain text version of the log line added to `text` column, so you should not place anything into `text`.
 
 Let's look at an example configuration entry:
 ```toml
@@ -137,6 +137,9 @@ fields = [["ip", 3]]
 ```
 
 Now, when I select the `custom15` config at runtime, the `IP` field for `web` lines will be overwritten. As previously discussed in the inheritance section, all of the other `[default.web]` rules for `web` will still persist.
+
+Custom configurations will be accessible at runtime:
+![screenshot 2](./img/ss2.png)
 
 You can use this functionality to modify existing rules as shown above, or create new type aliases entirely by specifying a new search pattern:
 

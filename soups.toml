@@ -76,3 +76,6 @@ fields = [["model", -1], ["user", -3, [0, -1]]]
 [default.export]
 pattern = "odoo.addons.web.controllers.export"
 fields = [["ip", 13, [0, -1]], ["user", 7], ["model", 10, [1, -1]]]
+
+[custom18.web]
+pattern = "sdkjhfsk"

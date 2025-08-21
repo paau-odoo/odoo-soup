@@ -238,6 +238,7 @@ def main():
             configs = listVersions()
             # print(configs)
             if configs:
+                print()
                 vers = prompt(
                     "Choose a configuration (ENTER for default)",
                     capPrompt=False,
