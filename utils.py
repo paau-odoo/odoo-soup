@@ -1,11 +1,27 @@
 from sqlalchemy import create_engine
 import os
 import sys
+from datetime import datetime
 
 
 import tomllib
 
 parse = None
+
+types = {
+    "date": datetime,
+    "level": int,
+    "origin": str,
+    "ip": str,
+    "http": str,
+    "route": str,
+    "code": int,
+    "time": float,
+    "user": str,
+    "object": str,
+    "records": str,
+    "text": str,
+}
 
 
 def condense(skipped) -> list[str]:

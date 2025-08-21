@@ -1,7 +1,7 @@
 from sqlalchemy.orm import declarative_base, sessionmaker
 from sqlalchemy import Column, Integer, Text, Double, DateTime, String
 from magicprompt import prompt
-from utils import condense, listFiles, identifyFiles, config, engine, parseConfig
+from utils import condense, listFiles, identifyFiles, config, engine, parseConfig, types
 import utils
 from datetime import datetime
 import gzip
@@ -35,7 +35,7 @@ class Log(Base):
     code = Column(Integer)
     time = Column(Double)
     user = Column(Text)
-    model = Column(Text)
+    object = Column(Text)
     records = Column(Text)
     text = Column(Text)
 
@@ -65,7 +65,7 @@ def applyTrim(str, field, lineType=None):
     # There should always be slice start, be it 0 or something specific
     if sS is None and sE is None:
         return str
-    if sE is None:
+    if sE is None or sE == 0:
         return str[sS:]
     return str[sS:sE]
 
@@ -80,9 +80,12 @@ def fromLine(splitLine, field, lineType=None):
     if f:
         try:
             raw = splitLine[f["index"]]
-            return applyTrim(raw, field, lineType)
+            raw = applyTrim(raw, field, lineType)
+            # Cast the contents to the expected type for sql
+            raw = types[field](raw)
+            return raw
         except:
-            return
+            return None
 
 
 def processLine(line: str) -> tuple:
@@ -98,7 +101,7 @@ def processLine(line: str) -> tuple:
         "code": None,
         "time": None,
         "user": None,
-        "model": None,
+        "object": None,
         "records": None,
         "text": None,
     }
@@ -128,8 +131,12 @@ def processLine(line: str) -> tuple:
 
     # Add in the type and raw text
     skeletor["type"] = utils.parse[lineType]["alias"]
+    skeletor["text"] = " ".join(spl[utils.parse["default"]["type"]["index"] + 1 :])
 
-    skeletor["text"] = " ".join(spl[utils.parse["default"]["type"]["index"] :])
+    # If origin is ? in the log, make it null
+    if skeletor["origin"] == "?":
+        skeletor["origin"] = None
+
     return (0, skeletor)
 
 
