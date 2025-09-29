@@ -98,3 +98,17 @@ fields = [["object", -1], ["user", -3, [0, -1]]]
 [default.export]
 pattern = "odoo.addons.web.controllers.export"
 fields = [["ip", 13, [0, -1]], ["user", 7], ["object", 10, [1, -1]]]
+
+[default.longpolling]
+pattern = "longpolling"
+fields = [
+    ["ip", 6],
+    ["http", 11, [1]],
+    ["route", 12],
+    ["code", 14],
+    ["time", -1]
+]
+
+[default.py_warn]
+pattern = "py.warnings"
+fields = [["object", 6, [0, -1]]]

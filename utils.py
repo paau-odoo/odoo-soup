@@ -10,7 +10,7 @@ parse = None
 
 types = {
     "date": datetime,
-    "level": int,
+    "level": str,
     "origin": str,
     "ip": str,
     "http": str,
